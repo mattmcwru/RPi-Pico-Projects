@@ -5,7 +5,7 @@ Example projects and setup for Raspberry Pi Pico development.
 
 ## Software Development Breadboard Setup
 
-This breadboard setup simplifies basic development on the Pico by enabling program loading and debugging using the OpenGDB toolset with [PicoProbe](https://blog.smittytone.net/2021/02/05/how-to-debug-a-raspberry-pi-pico-with-a-mac-swd/).
+This breadboard setup simplifies basic development on the Pico by enabling program loading and debugging using the OpenOCD toolset with [PicoProbe](https://blog.smittytone.net/2021/02/05/how-to-debug-a-raspberry-pi-pico-with-a-mac-swd/).
 
 ![PicoProbe Development Breadboard](images/PiPicoDevBreadboard.jpg)
 
@@ -16,7 +16,7 @@ TODO: Add schematic for breadboard here...
 
 ### Software Setup
 
-The following instructions will use the C/C++ SDK and the OpenGDB toolset for Pico development running on MacOS.
+The following instructions will use the C/C++ SDK and the OpenOCD toolset for Pico development running on MacOS.
 
 **NOTE:** Much of this setup can be automated using the provided [pico_setup.sh](https://raw.githubusercontent.com/raspberrypi/pico-setup/master/pico_setup.sh) script but where is the fun in that?
 
@@ -34,20 +34,20 @@ The following instructions will use the C/C++ SDK and the OpenGDB toolset for Pi
 	```
 	$ git clone -b master --recurse-submodules https://github.com/raspberrypi/pico-sdk.git ~/pico/pico-sdk
 	```
-	
+
 	NOTE: This takes a while to run.
 
 1. Add the SDK path to your environment.
 
 	Open either `~/.bash_profile` or `~/.zshrc` using nano or any other editor.  (This will depend on the terminal shell being used.)
-	
+
 	Add the following lines to the end of the file, then save.
-	
+
 	```
 	# Raspberry Pi Pico SDK Path
 	export PICO_SDK_PATH="$HOME/pico/pico-sdk"
-	```	
-	
+	```
+
 	NOTE: The terminal must be closed and a new terminal started for the changes to take effect.
 
 1. Install the arm cross-compiler and cmake tools.
@@ -57,7 +57,7 @@ The following instructions will use the C/C++ SDK and the OpenGDB toolset for Pi
 	$ brew tap ArmMbed/homebrew-formulae
 	$ brew install arm-none-eabi-gcc
 	```
-	
+
 ### Build a Test Project
 
 Start a new project to verify the tools are setup properly.
@@ -68,7 +68,7 @@ Start a new project to verify the tools are setup properly.
 	$ mkdir ~/pico/PicoTest
 	$ cd ~/pico/PicoTest
 	```
-	
+
 1. Copy the Pico-SDK CMake template into the new project.
 
 	```
@@ -80,42 +80,42 @@ Start a new project to verify the tools are setup properly.
 	```
 	# What CMake to start at
 	cmake_minimum_required(VERSION 3.12)
- 
+
 	# Include the subsidiary .cmake file to get the SDK
 	include(pico_sdk_import.cmake)
- 
+
 	# Set the name and version of the project
 	project(PicoTest VERSION 1.0.0)
- 
+
 	# Link the Project to a source file
 	add_executable(PicoTest source.c)
- 
+
 	# Link the Project to an extra library (pico_stdlib)
 	target_link_libraries(PicoTest pico_stdlib)
- 
+
 	# Initialize the SDK
 	pico_sdk_init()
- 
+
 	# Enable both USB and UART output
 	pico_enable_stdio_usb(PicoTest 1)
 	pico_enable_stdio_uart(PicoTest 1)
- 
+
 	# Enable extra outputs (SWD?)
 	pico_add_extra_outputs(PicoTest)
 	```
-	
+
 1. Create a new header file `source.h` with the following lines:
-	
+
 	```
 	#ifndef _PICOTEST_HEADER_
 	#define _PICOTEST_HEADER_
-	
+
 	#include <stdio.h>
 	#include "pico/stdlib.h"
 
 	#endif // _PICOTEST_HEADER_
 	```
-	
+
 1. Create a new source file `source.c` with the following lines:
 
 	```
@@ -126,18 +126,18 @@ Start a new project to verify the tools are setup properly.
 
     	gpio_init(LED_PIN);
     	gpio_set_dir(LED_PIN, GPIO_OUT);
-	
+
 		while (true) {
 			gpio_put(LED_PIN, 1);
 			sleep_ms(250);
 			gpio_put(LED_PIN, 0);
 			sleep_ms(250);
 		}
-	
+
 		return 0;
 	}
    ```
-   
+
 1. Create a build directory.
 
  	```
@@ -161,17 +161,17 @@ There are two options to load the image using the **BOOTSEL** mode described bel
 1. Put the Pico into **BOOTSEL** programming mode.
 
 	1. If already connected, unplug the USB cable from the Pico board.
-	
+
 	1. Press and hold the **BOOTSEL** button while plugging the USB cable into the Pico.
 
-	1. Release the **BOOTSEL** button.  
+	1. Release the **BOOTSEL** button.
 
 		The Pico should appear as a drive device on the computer.
 
 1. Open a file manager window to the build directory.
 
 	**TIP:** Open a file manager window for the current directory using the following command:
-	
+
 	```
 	$ open .
 	```
@@ -203,7 +203,7 @@ The Pico will reboot (the drive will disconnect when this happens) and the new p
 	```
 
 	The Pico should reboot and run the program.
-	
+
 
 ### SWD Programming via PicoProbe
 
@@ -236,9 +236,9 @@ The Pico will reboot (the drive will disconnect when this happens) and the new p
 	$ brew install libtool automake texinfo wget gcc pkg-config libusb
 	$ export PATH="/usr/local/opt/texinfo/bin:$PATH"
 	```
-	
+
 	NOTE: There may be errors if older packages are already installed.  Run `brew upgrade` for those packages.
-	
+
 	NOTE: If the _Apple Command Line Tools_ are missing then run `xcode-select --install` but this may take a very long time.
 
 1. Download and build OpenOCD
@@ -250,7 +250,7 @@ The Pico will reboot (the drive will disconnect when this happens) and the new p
 	$ ./configure --enable-picoprobe --disable-werror
 	$ make -j4
 	$ make install
-	```	
+	```
 
 1. Load the PicoTest program on the target board.
 
@@ -273,7 +273,7 @@ The [Visual Studio Code IDE](https://code.visualstudio.com) can be setup for Pic
 	$ rm -rf build
 	$ mkdir .vscode
 	```
-	
+
 1. Create a file named `.vscode/launch.json` and copy the following configuration:
 
 	```
@@ -292,7 +292,7 @@ The [Visual Studio Code IDE](https://code.visualstudio.com) can be setup for Pic
 	            "configFiles": [
 	                "interface/picoprobe.cfg",
 	                "target/rp2040.cfg"
-	            ],                 
+	            ],
 	            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
 	            "runToMain": true,
 	            "postRestartCommands": [
@@ -303,7 +303,7 @@ The [Visual Studio Code IDE](https://code.visualstudio.com) can be setup for Pic
 	    ]
 	}
 	```
-	
+
 1. Create a file named `.vscode/settings.json` and copy the following configuration:
 
 	```
@@ -331,9 +331,9 @@ The [Visual Studio Code IDE](https://code.visualstudio.com) can be setup for Pic
 1. Start Visual Studio Code ([download](https://code.visualstudio.com/Download) and install if necessary).
 
 1. Add CMake support to Visual Studio Code.
-		
+
 	1. Click on the Extensions icon (on the left side bar).
-	
+
 	1. Enter `CMake Tools` in the search field.
 
 	1. Locate _CMake Tools by Microsoft_ in the list and click **Install**.
@@ -345,15 +345,16 @@ The [Visual Studio Code IDE](https://code.visualstudio.com) can be setup for Pic
 	1. Enter `cortex-debug` in the search field.
 
 	1. Locate _Cortex-Debug_ in the list and click **Install**.
-	
+
 
 1. Open the PicoTest folder.
 
 	NOTE: Remove the build directory if built with the command line tools to avoid conflicts.
-	
+
 	CMake will ask to select a kit.  Click "Scan for Kits".  On the bottom status bar, click the kit icon.  Pick "GCC 9.2.1 arm-none-eabi" (or whatever the current version of the arm tools are).
 
-1. The CMake build will automatically run.  Check for errors in the message window.	
+1. The CMake build will automatically run.  Check for errors in the message window.
+
 1. Click the "Run" button on the left-hand side to launch the debugger.
 
 1. There will be a small green arrow labeled Pico Debug at the top of the window on the left.  Click the green arrow to load and run the program.
@@ -388,7 +389,7 @@ $ git clone -b master https://github.com/raspberrypi/pico-playground.git ~/pico/
 
 Add path environment variable exports to either `~/.bash_profile` or `~/.zshrc`.
 
-``` 
+```
 export PICO_EXAMPLES_PATH="$HOME/pico/pico-examples"
 export PICO_EXTRAS_PATH="$HOME/pico/pico-extras"
 export PICO_PLAYGROUND_PATH="$HOME/pico/pico-playground"
