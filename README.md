@@ -407,6 +407,26 @@ $ git submodule update
 ```
 
 
+### Using Minicom instead of Screen
+
+MacOS ships with the _screen_ serial terminal pre-installed.  This works but has a few annoying bugs so you may want to install _minicom_ as an alternative.
+
+Use homebrew to install minicom with the following command:
+
+```
+$ brew install minicom
+```
+
+Then in a terminal open the serial port connection using the device file (e.g. `/dev/tty.usbserial-1460`) for your serial port.
+
+```
+$ minicom -D /dev/tty.usbserial-1460
+```
+
+NOTE: Minicom uses the **meta** key for menu commands which probably is not on your Mac keyboard.  The **option** key can be configured to act as **meta** key in the Terminal preferences menu under the keyboard settings.
+
+To quit minicom press **Meta-Q**.
+
 
 
 ### References
@@ -416,4 +436,9 @@ $ git submodule update
 * [GitHub:smittytone/pi-pico](https://github.com/smittytone/pi-pico)
 * [Getting started with Raspberry Pi Pico](https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf)
 * [GitHub:raspberrypi/pico-examples](https://github.com/raspberrypi/pico-examples)
+
+
+### Example Code and Driver Libraries
+
+* [GitHub:pimoroni/pimoroni-pico](https://github.com/pimoroni/pimoroni-pico)
 
